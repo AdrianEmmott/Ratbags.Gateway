@@ -1,0 +1,6 @@
+@Articles.Gateway_HostAddress = https://localhost:5137
+
+GET {{Articles.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
