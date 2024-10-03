@@ -22,6 +22,10 @@
           "Port": 7160
         }
       ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": []
+      },
       "UpstreamPathTemplate": "/api/comments/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "DangerousAcceptAnyServerCertificateValidator": true

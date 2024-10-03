@@ -1,5 +1,6 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ratbags.Shared.DTOs.Events.AppSettingsBase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,51 +10,63 @@ if (builder.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>();
 }
 
-// Configure Kestrel to use HTTPS on port 5001
+
+builder.Services.Configure<AppSettingsBase>(builder.Configuration);
+var appSettings = builder.Configuration.Get<AppSettingsBase>() ?? throw new Exception("Appsettings missing");
+
+// config kestrel for https on 5001
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ListenAnyIP(5000); // HTTP on port 5000
     serverOptions.ListenAnyIP(5001, listenOptions =>
     {
-        listenOptions.UseHttps("aspnetapp.pfx", "dog1Open!"); // Ensure the correct path and password
+        listenOptions.UseHttps(appSettings.Certificate.Name, appSettings.Certificate.Password);
     });
 });
 
-// Configure CORS
+// config cors
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOriginAngular",
         builder => builder
-            .WithOrigins("https://localhost:4200") // Angular
+            .WithOrigins("https://localhost:4200") // angular
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
 
     options.AddPolicy("AllowSpecificOriginReact",
         builder => builder
-            .WithOrigins("http://localhost:5173") // React
+            .WithOrigins("http://localhost:5173") // react
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
 });
 
-// Add services to the container.
+// add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Load Ocelot configuration from ocelot.json
+// config ocelot
 builder.Configuration.AddJsonFile("ocelot.json");
 
-builder.Services.AddOcelot(builder.Configuration); // Add Ocelot services
+// setup identity with ocelot (this proj)
+builder.Services.AddAuthentication()
+    .AddJwtBearer("IdentityApiKey", options =>
+    {
+        options.Authority = "https://localhost:5000"; // Identity Server or Auth endpoint
+        options.Audience = "api";
+    });
+
+builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
 
-// Enable CORS
+// cors
 app.UseCors("AllowSpecificOriginAngular");
 app.UseCors("AllowSpecificOriginReact");
 
-// Configure the HTTP request pipeline.
+// config http request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -67,16 +80,16 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-// Register the endpoint to return "Hello World!"
+// "/" Hello World!
 app.MapGet("/", async context =>
 {
     await context.Response.WriteAsync("Hello World!");
 });
 
-// Register controllers
+// controllers
 app.MapControllers();
 
-// Use Ocelot middleware
+// ocelot middleware
 app.UseWebSockets();
 app.UseOcelot().Wait();
 
