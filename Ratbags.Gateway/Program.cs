@@ -68,7 +68,7 @@ builder.Services.AddAuthentication()
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = appSettings.JWT.Issuer,
-            ValidAudience = appSettings.JWT.AudienceType,
+            ValidAudience = appSettings.JWT.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JWT.Secret))
         };
     });
