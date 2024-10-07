@@ -1,8 +1,7 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using Ratbags.Shared.DTOs.Events.AppSettingsBase;
+using Ratbags.Core.Settings;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,12 +12,6 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
 }
-
-builder.Services.Configure<AppSettingsBase>(builder.Configuration);
-// hmm
-//builder.Configuration
-//    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)  // Base settings
-//    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);  // Environment-specific
 
 builder.Services.Configure<AppSettingsBase>(builder.Configuration);
 var appSettings = builder.Configuration.Get<AppSettingsBase>() ?? throw new Exception("Appsettings missing");
@@ -52,13 +45,11 @@ builder.Services.AddCors(options =>
 });
 
 // config ocelot for local / docker
-//builder.Configuration.AddJsonFile("ocelot.json");
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"ocelot.{environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
     
-
 // add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -76,9 +67,9 @@ builder.Services.AddAuthentication()
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            ValidAudience = builder.Configuration["JWT:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+            ValidIssuer = appSettings.JWT.Issuer,
+            ValidAudience = appSettings.JWT.AudienceType,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JWT.Secret))
         };
     });
 
