@@ -2,9 +2,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+# github pat
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=${GITHUB_TOKEN}
+
+# make sure it gets picked up...
+RUN echo "GATEWAY GITHUB_TOKEN: $GITHUB_TOKEN"
+
+# copy nuget.config and replace 'myPAT' with actual pat (using sed insead of powershell for image size)
+COPY nuget.config .
+RUN sed -i "s/myPAT/$GITHUB_TOKEN/g" nuget.config && cat nuget.config
+
 # copy and build project
 COPY ["Ratbags.Gateway.csproj", "./"]
-RUN dotnet restore "Ratbags.Gateway.csproj"
+RUN dotnet restore "Ratbags.Gateway.csproj" --configfile nuget.config
 
 COPY . .
 WORKDIR "/src/."

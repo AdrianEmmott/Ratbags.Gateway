@@ -1,6 +1,19 @@
 {
   "Routes": [
     {
+      "DownstreamPathTemplate": "/api/account/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 7158
+        }
+      ],
+      "UpstreamPathTemplate": "/api/account/{everything}",
+      "UpstreamHttpMethod": [ "POST", "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
       "DownstreamPathTemplate": "/api/articles/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -11,7 +24,15 @@
       ],
       "UpstreamPathTemplate": "/api/articles/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      // keep for admin down the road
+      //"AuthenticationOptions": {
+      //  "AuthenticationProviderKey": "IdentityApiKey",
+      //  "AllowedScopes": []
+      //},
       "DangerousAcceptAnyServerCertificateValidator": true
+      //"AddHeadersToRequest": {
+      //  "Authorization": "{Authorization}" // Forward Authorization header explicitly
+      //}
     },
     {
       "DownstreamPathTemplate": "/api/comments/{everything}",
@@ -22,10 +43,6 @@
           "Port": 7160
         }
       ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": []
-      },
       "UpstreamPathTemplate": "/api/comments/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "DangerousAcceptAnyServerCertificateValidator": true
