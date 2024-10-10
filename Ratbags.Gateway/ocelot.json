@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/account/{everything}",
+      "DownstreamPathTemplate": "/api/accounts/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -9,9 +9,21 @@
           "Port": 7158
         }
       ],
-      "UpstreamPathTemplate": "/api/account/{everything}",
-      "UpstreamHttpMethod": [ "POST", "GET" ],
+      "UpstreamPathTemplate": "/api/accounts/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      "DownstreamPathTemplate": "/signin-google",
+      "UpstreamPathTemplate": "/signin-google",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7158 // ratbags.account
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/articles/{everything}",
@@ -24,15 +36,7 @@
       ],
       "UpstreamPathTemplate": "/api/articles/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      // keep for admin down the road
-      //"AuthenticationOptions": {
-      //  "AuthenticationProviderKey": "IdentityApiKey",
-      //  "AllowedScopes": []
-      //},
       "DangerousAcceptAnyServerCertificateValidator": true
-      //"AddHeadersToRequest": {
-      //  "Authorization": "{Authorization}" // Forward Authorization header explicitly
-      //}
     },
     {
       "DownstreamPathTemplate": "/api/comments/{everything}",

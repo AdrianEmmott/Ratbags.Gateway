@@ -16,29 +16,35 @@ if (builder.Environment.IsDevelopment())
 builder.Services.Configure<AppSettingsBase>(builder.Configuration);
 var appSettings = builder.Configuration.Get<AppSettingsBase>() ?? throw new Exception("Appsettings missing");
 
-// config kestrel for https on 5001
+var certificatePath = string.Empty;
+var certificateKeyPath = string.Empty;
+
+// are we in docker?
+var isDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
+certificatePath = Path.Combine(appSettings.Certificate.Path, appSettings.Certificate.Name);
+
+Console.WriteLine($"HTTP Port: {appSettings.Ports.Http}");
+Console.WriteLine($"HTTPS Port: {appSettings.Ports.Https}");
+
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.ListenAnyIP(5000); // HTTP on port 5000
-    serverOptions.ListenAnyIP(5001, listenOptions =>
+    serverOptions.ListenAnyIP(Convert.ToInt32(appSettings.Ports.Http));
+    serverOptions.ListenAnyIP(Convert.ToInt32(appSettings.Ports.Https), listenOptions =>
     {
-        listenOptions.UseHttps(appSettings.Certificate.Name, appSettings.Certificate.Password);
+        listenOptions.UseHttps(
+            certificatePath,
+            appSettings.Certificate.Password);
     });
 });
+
 
 // config cors
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOriginAngular",
+    options.AddPolicy("AllowSpecificOrigins",
         builder => builder
-            .WithOrigins("https://localhost:4200") // angular
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
-
-    options.AddPolicy("AllowSpecificOriginReact",
-        builder => builder
-            .WithOrigins("http://localhost:5173") // react
+            .WithOrigins("https://localhost:4200", "http://localhost:5173") // angular and react
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
@@ -83,9 +89,8 @@ foreach (var route in ocelotConfig)
     app.Logger.LogInformation($"Downstream Port: {route["DownstreamHostAndPorts:0:Port"]}");
 }
 
-// cors
-app.UseCors("AllowSpecificOriginAngular");
-app.UseCors("AllowSpecificOriginReact");
+// use cors
+app.UseCors("AllowSpecificOrigins");
 
 // config http request pipeline
 if (app.Environment.IsDevelopment())
@@ -101,10 +106,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// controllers
 app.MapControllers();
 
-// ocelot middleware
 app.UseWebSockets();
 app.UseOcelot().Wait();
 

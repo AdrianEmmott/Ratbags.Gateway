@@ -6,9 +6,6 @@ WORKDIR /src
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 
-# make sure it gets picked up...
-RUN echo "GATEWAY GITHUB_TOKEN: $GITHUB_TOKEN"
-
 # copy nuget.config and replace 'myPAT' with actual pat (using sed insead of powershell for image size)
 COPY nuget.config .
 RUN sed -i "s/myPAT/$GITHUB_TOKEN/g" nuget.config && cat nuget.config
@@ -36,7 +33,6 @@ RUN apt-get update && apt-get install -y ca-certificates
 
 # copy published app into image
 COPY --from=publish /app/publish .
-COPY aspnetapp.pfx /app/aspnetapp.pfx
 
 # run!
 ENTRYPOINT ["dotnet", "Ratbags.Gateway.dll"]
