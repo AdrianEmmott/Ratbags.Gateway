@@ -26,6 +26,18 @@
       "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
+      "DownstreamPathTemplate": "/signin-facebook",
+      "UpstreamPathTemplate": "/signin-facebook",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7158 // ratbags.account
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/articles/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
