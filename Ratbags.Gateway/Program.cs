@@ -38,8 +38,13 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     });
 });
 
+// config ocelot for local / docker
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"ocelot.{environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
-// config cors
+// add services
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
@@ -50,13 +55,6 @@ builder.Services.AddCors(options =>
             .AllowCredentials());
 });
 
-// config ocelot for local / docker
-builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"ocelot.{environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-    
-// add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -92,7 +90,7 @@ foreach (var route in ocelotConfig)
 // use cors
 app.UseCors("AllowSpecificOrigins");
 
-// config http request pipeline
+// setup dev
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
