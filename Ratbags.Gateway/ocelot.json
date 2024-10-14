@@ -65,6 +65,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7200"
+    "BaseUrl": "https://localhost:5001"
   }
 }

@@ -10,8 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/accounts/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST" ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/signin-google",
@@ -47,8 +46,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/articles/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/comments/{everything}",
@@ -60,8 +58,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/comments/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     }
   ],
   "GlobalConfiguration": {
