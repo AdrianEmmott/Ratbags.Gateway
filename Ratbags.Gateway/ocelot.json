@@ -10,7 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/accounts/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
       "DangerousAcceptAnyServerCertificateValidator": true
     },
     {
@@ -20,7 +20,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7158 // ratbags.account
+          "Port": 7158 // ratbags.accounts
         }
       ],
       "UpstreamHttpMethod": [ "GET", "POST" ]
@@ -32,7 +32,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7158 // ratbags.account
+          "Port": 7158 // ratbags.accounts
         }
       ],
       "UpstreamHttpMethod": [ "GET", "POST" ]
@@ -47,7 +47,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/articles/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
       "DangerousAcceptAnyServerCertificateValidator": true
     },
     {
@@ -60,7 +60,33 @@
         }
       ],
       "UpstreamPathTemplate": "/api/comments/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      "DownstreamPathTemplate": "/api/emails/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 7161
+        }
+      ],
+      "UpstreamPathTemplate": "/api/emails/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      "DownstreamPathTemplate": "/api/images/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 7162
+        }
+      ],
+      "UpstreamPathTemplate": "/api/images/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
       "DangerousAcceptAnyServerCertificateValidator": true
     }
   ],

@@ -2,6 +2,7 @@ using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ratbags.Core.Settings;
+using System.Net;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,7 @@ certificatePath = Path.Combine(appSettings.Certificate.Path, appSettings.Certifi
 Console.WriteLine($"HTTP Port: {appSettings.Ports.Http}");
 Console.WriteLine($"HTTPS Port: {appSettings.Ports.Https}");
 
+// config kestrel
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ListenAnyIP(Convert.ToInt32(appSettings.Ports.Http));
@@ -49,7 +51,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
         builder => builder
-            .WithOrigins("https://localhost:4200", "http://localhost:5173") // angular and react
+            .WithOrigins("https://localhost:4200", "http://localhost:5173", "http://localhost:8080") // angular, react and localhost for docker
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
@@ -107,6 +109,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseWebSockets();
+
 app.UseOcelot().Wait();
 
 app.Run();
